@@ -1,5 +1,5 @@
-name: 'Setup Shopware'
-description: 'Install Shopware with specific versions in your CI'
+name: 'Setup Shopware 6'
+description: 'Install Shopware 6 with specific versions in your CI'
 author: 'FriendsOfShopware'
 branding:
   color: 'blue'
@@ -12,7 +12,7 @@ inputs:
   shopware-version:
     description: 'Shopware Version to use'
     required: true
-    default: 'v6.5.3.2'
+    default: 'v6.5.7.3'
   php-version:
     description: 'PHP Version to use'
     required: true
@@ -33,6 +33,10 @@ inputs:
     description: 'Currency to install'
     required: true
     default: 'EUR'
+  composer-packages:
+    description: 'Additional composer packages'
+    required: false
+    default: ''
   keep-composer-tools:
     description: 'Keep Shopware Composer tools (PHPStan, ECS, BC-Checker)'
     required: true
@@ -85,6 +89,12 @@ runs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       shell: bash
       run: composer install
+
+    - name: Install additional dependencies
+      if: ${{ inputs.composer-packages }} != ''
+      shell: bash
+      run: |
+        composer require ${{ inputs.composer-packages }}
 
     - name: Install Shopware
       if: inputs.install == 'true'
